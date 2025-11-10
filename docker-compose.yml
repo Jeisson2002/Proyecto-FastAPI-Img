@@ -1,0 +1,40 @@
+services:
+  db:
+    image: postgres:15
+    container_name: fastapi_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app_net
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    restart: always
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: ${DATABASE_URL}
+      APP_HOST: ${APP_HOST}
+      APP_PORT: ${APP_PORT}
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/app
+    networks:
+      - app_net
+
+networks:
+  app_net:
+
+volumes:
+  postgres_data:
