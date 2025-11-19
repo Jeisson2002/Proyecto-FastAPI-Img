@@ -1,10 +1,15 @@
 # database.py
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker, declarative_base
 from sqlalchemy.exc import OperationalError
 import os
 
-DATABASE_URL = os.getenv("DATABASE_URL")
+# =============================
+# 🔌 Conexión a PostgreSQL
+# =============================
+
+# CAMBIA ESTO CON TUS DATOS REALES:
+DATABASE_URL = "postgresql://postgres:1234@localhost:5432/mi_fastapi"
 
 # Crear el motor de conexión
 engine = create_engine(DATABASE_URL)
@@ -23,12 +28,14 @@ def get_db():
     finally:
         db.close()
 
-
-# Función para probar la conexión directamente
+# =============================
+# 🧪 Probar conexión directa
+# =============================
 def test_connection():
     try:
         with engine.connect() as conn:
-            conn.execute("SELECT 1")
+            conn.execute(text("SELECT 1"))
+        print("✔️ Conexión a PostgreSQL exitosa")
         return True
     except OperationalError as e:
         print(f"❌ Error conectando a la base de datos: {e}")

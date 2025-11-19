@@ -1,0 +1,44 @@
+.terms-container {
+  margin: 50px auto;
+  max-width: 900px;
+  background: #ffffffcc;
+  padding: 30px;
+  border-radius: 15px;
+  box-shadow: 0 8px 25px rgba(255, 110, 150, 0.35);
+  font-family: "Poppins", sans-serif;
+}
+
+h1 {
+  color: #ff3d72;
+  text-shadow: 0 0 6px #ff99bb;
+  margin-bottom: 20px;
+}
+
+h2 {
+  color: #ff6d95;
+}
+
+/* 🔥 BOTÓN DE VOLVER — VERSIÓN MEJORADA (tu estilo adaptado) */
+.btn-back {
+  margin-top: 25px;
+  background: #ff6d95;
+  border: none;
+  padding: 12px 25px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0 0 10px #ff8fb1;
+}
+
+.btn-back:hover {
+  background: #ff3d72;
+  box-shadow: 0 0 14px #ff3d72;
+  transform: translateY(-2px);
+}
+
+.btn-back:active {
+  transform: translateY(1px);
+}

@@ -1,0 +1,41 @@
+.albums-container {
+  text-align: center;
+  padding: 20px;
+  background-color: pink;
+}
+
+.title {
+  font-size: 2rem;
+  color: #ff5c8d;
+  margin-bottom: 30px;
+}
+
+.album {
+  margin-bottom: 40px;
+}
+
+.album h2 {
+  color: #333;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.photos {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 15px;
+}
+
+.photos img {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 15px;
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.photos img:hover {
+  transform: scale(1.05);
+}

@@ -1,0 +1,9 @@
+<div class="albums-container">
+  <div class="album" *ngFor="let album of albums">
+    <h2>{{ album.title }}</h2>
+
+    <div class="photos">
+      <img *ngFor="let photo of album.photos" [src]="photo" [alt]="album.title" />
+    </div>
+  </div>
+</div>

@@ -10,3 +10,4 @@ python_multipart
 jinja2
 pytest
 httpx
+psycopg2-binary

@@ -1,0 +1,68 @@
+<!-- 🔥 NUEVO HTML COMPLETO, CORREGIDO Y LISTO -->
+
+<div class="excel-wrapper">
+  <div class="excel-card">
+
+    <!-- Ícono Excel animado -->
+    <img src="assets/excel.png" class="excel-logo" alt="Excel">
+
+    <h2>📄 Cargar Archivo Excel</h2>
+
+    <!-- Selector de archivo -->
+    <label class="file-label">
+      Seleccionar archivo
+      <input type="file" (change)="onFileSelected($event)">
+    </label>
+
+    <div class="file-name" *ngIf="selectedFile">
+      Archivo: {{ selectedFile.name }}
+    </div>
+
+    <!-- Selector de Hoja -->
+    <div *ngIf="sheetNames.length > 0" class="sheet-select-container">
+      <label class="sheet-select-label">Selecciona una hoja:</label>
+      <select class="sheet-select neon-select" [(ngModel)]="selectedSheet" (change)="onSheetChange($event)">
+        <option *ngFor="let sheet of sheetNames" [value]="sheet">{{ sheet }}</option>
+      </select>
+    </div>
+
+    <!-- Botón subir -->
+    <button class="upload-btn neon-btn-blue" (click)="uploadExcel()">
+      Subir Archivo
+    </button>
+
+    <!-- Barra de progreso -->
+    <div class="progress-container" *ngIf="uploading">
+      <div class="progress-bar" [style.width.%]="uploadProgress"></div>
+    </div>
+
+    <p *ngIf="uploading" class="progress-text">
+      Cargando: {{ uploadProgress }}%
+    </p>
+
+    <p *ngIf="statusMessage" [ngClass]="statusType">
+      {{ statusMessage }}
+    </p>
+
+  </div>
+</div>
+
+<!-- Vista previa -->
+<div class="preview-container" *ngIf="excelPreview.length > 0">
+  <h3 class="neon-preview-title">👁️ Vista previa del archivo</h3>
+
+  <table class="preview-table">
+    <tr *ngFor="let row of excelPreview">
+      <td *ngFor="let cell of row">{{ cell }}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Gráficos -->
+<div style="width: 90%; max-width: 900px; margin: 40px auto;">
+  <canvas id="chartBar"></canvas>
+</div>
+
+<div style="width: 90%; max-width: 900px; margin: 40px auto;">
+  <canvas id="chartLine"></canvas>
+</div>

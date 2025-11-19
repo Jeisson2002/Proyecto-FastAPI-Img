@@ -6,6 +6,6 @@ router = APIRouter()
 
 @router.get("/status")
 def status():
-    return {"status": "ok", "message": "API funcionando correctamente"}
+    return {"API funcionando correctamente"}
 
 # Aquí podrías incluir tus rutas CRUD y de imágenes si prefieres agruparlas

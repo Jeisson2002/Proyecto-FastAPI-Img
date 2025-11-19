@@ -23,13 +23,14 @@ services:
     depends_on:
       - db
     environment:
-      DATABASE_URL: ${DATABASE_URL}
-      APP_HOST: ${APP_HOST}
-      APP_PORT: ${APP_PORT}
+      DATABASE_URL: "postgresql+asyncpg://appuser:changeme@db:5432/appdb"
+      APP_HOST: "0.0.0.0"
+      APP_PORT: "8000"
     ports:
       - "8000:8000"
     volumes:
-      - .:/app
+      - ./files:/app/files    # <-- Agregado: vincula la carpeta files local con el contenedor
+      - ./uploads:/app/uploads # <-- opcional, si quieres también que las imágenes estén persistentes
     networks:
       - app_net
 

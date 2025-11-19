@@ -1,13 +1,11 @@
-<main class="main">
-  <div class="content">
-    <h1>Welcome to {{ title }}!</h1>
-    <img src="assets/angular.svg" alt="Angular Logo" class="logo" />
-    <p>Here are some links to help you start:</p>
+<nav class="menu-bar">
+  <div class="menu-logo">📸 Álbum y Presentación 😎</div>
 
-    <ul>
-      <li><a href="https://angular.dev/tutorials" target="_blank" rel="noopener">Tutorials</a></li>
-      <li><a href="https://angular.dev/tools" target="_blank" rel="noopener">CLI Documentation</a></li>
-      <li><a href="https://angular.dev/guide" target="_blank" rel="noopener">Docs</a></li>
-    </ul>
-  </div>
-</main>
+  <ul class="menu-links">
+      <li><a routerLink="/albums">Albums</a></li>
+      <li><a routerLink="/cargar-excel">Cargador de Excel</a></li>
+      <li><a routerLink="/terminos">Términos y Condiciones</a></li>
+  </ul>
+</nav>
+
+<router-outlet></router-outlet>

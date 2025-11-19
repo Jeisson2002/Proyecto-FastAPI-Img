@@ -1,0 +1,223 @@
+/* 🔹 TU ESTILO ORIGINAL — NO SE TOCA */
+.excel-container {
+  margin: 40px auto;
+  max-width: 600px;
+  padding: 20px;
+  font-family: "Poppins", sans-serif;
+}
+
+h2 {
+  font-size: 30px;
+  font-weight: 700;
+  margin-bottom: 25px;
+  text-shadow: 0 0 6px #ff99bb;
+}
+
+.file-label {
+  display: inline-block;
+  background: #ff6d95;
+  padding: 12px 20px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: white;
+  font-weight: 600;
+  font-size: 16px;
+  transition: 0.3s;
+  box-shadow: 0 0 8px #ff6d95;
+}
+
+.file-label:hover {
+  background: #ff3d72;
+  box-shadow: 0 0 12px #ff3d72;
+}
+
+input[type="file"] {
+  display: none;
+}
+
+.file-name {
+  margin-top: 15px;
+  font-size: 15px;
+}
+
+.upload-btn {
+  margin-top: 25px;
+  background: #ff6d95;
+  border: none;
+  padding: 12px 25px;
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.4s;
+  box-shadow: 0 0 8px #ff6d95;
+}
+
+.upload-btn:hover {
+  background: #ff3d72;
+  box-shadow: 0 0 12px #ff3d72;
+}
+
+.success {
+  margin-top: 20px;
+  color: #28a745;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 0 0 4px #5cff8d;
+}
+
+.error {
+  margin-top: 20px;
+  color: #dc3545;
+  font-size: 16px;
+  font-weight: bold;
+  text-shadow: 0 0 4px #ff6f6f;
+}
+
+/* ---------------------------------------------------------------- */
+/* 🔥 CONTENEDOR Y TARJETA                                        */
+/* ---------------------------------------------------------------- */
+
+.excel-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 40px;
+}
+
+.excel-card {
+  background: white;
+  padding: 25px;
+  width: 450px;
+  border-radius: 18px;
+  box-shadow: 0 8px 25px rgba(255, 110, 150, 0.35);
+  text-align: center;
+  animation: floatCard 3s ease-in-out infinite;
+  position: relative;
+}
+
+@keyframes floatCard {
+  0% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+
+/* Ícono Excel Neón Animado */
+.excel-logo {
+  width: 90px;
+  margin: 0 auto 15px auto;
+  filter: drop-shadow(0 0 12px #00ff88);
+  animation: neonPulse 1.7s infinite;
+}
+
+@keyframes neonPulse {
+  0% { filter: drop-shadow(0 0 4px #00ff88); }
+  50% { filter: drop-shadow(0 0 14px #00ff88); }
+  100% { filter: drop-shadow(0 0 4px #00ff88); }
+}
+
+/* Barra de progreso */
+.progress-container {
+  width: 100%;
+  height: 12px;
+  background: #ffe0ed;
+  border-radius: 10px;
+  margin-top: 20px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  height: 100%;
+  background: #ff6d95;
+  width: 0%;
+  transition: width 0.3s ease;
+  box-shadow: 0 0 8px #ff6d95;
+}
+
+.progress-text {
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 14px;
+  color: #ff3d72;
+  text-shadow: 0 0 4px #ff8fb1;
+}
+
+/* Vista previa */
+.preview-container {
+  margin-top: 25px;
+  background: #fff;
+  padding: 15px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  max-height: 300px;
+  overflow: auto;
+}
+
+.preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.preview-table td {
+  border: 1px solid #ddd;
+  padding: 6px 10px;
+}
+
+/* ---------------------------------------------------------------- */
+/* ⭐ SELECTOR DE HOJA (Rosado Neón)                               */
+/* ---------------------------------------------------------------- */
+
+.sheet-select-container {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.sheet-select-label {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ff3d72;
+  text-shadow: 0 0 4px #ff6d95;
+}
+
+.sheet-select {
+  padding: 10px 15px;
+  font-size: 15px;
+  font-weight: 600;
+  border-radius: 12px;
+  border: 2px solid #ff8fb1;
+  background: #fff;
+  color: #555;
+  cursor: pointer;
+  transition: 0.3s ease;
+  box-shadow: 0px 3px 8px rgba(255, 140, 175, 0.25);
+}
+
+.sheet-select:hover {
+  border-color: #ff6d95;
+  box-shadow: 0px 5px 12px rgba(255, 92, 150, 0.45);
+}
+
+.sheet-select:focus {
+  outline: none;
+  border-color: #ff3d72;
+  box-shadow: 0px 4px 10px rgba(255, 61, 114, 0.45);
+}
+
+/* ---------------------------------------------------------------- */
+/* 🚫 OCULTAR COMPLETAMENTE LA TABLA ORIGINAL                    */
+/* ---------------------------------------------------------------- */
+
+.table,
+.table-preview,
+.schema-preview,
+#preview-columns,
+.columns-schema {
+  display: none !important;
+}
+
+/* FIN CSS */
