@@ -31,7 +31,7 @@ export class ExcelUploaderComponent {
   statusMessage = '';
   statusType = '';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
 
   // -------------------------------------------------------------------
@@ -98,6 +98,7 @@ export class ExcelUploaderComponent {
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
+    formData.append('sheet', this.selectedSheet); // <-- NECESARIO 🔥
 
     this.uploading = true;
 
@@ -122,10 +123,11 @@ export class ExcelUploaderComponent {
         this.statusMessage = 'Error al subir archivo.';
         this.statusType = 'error';
         this.uploading = false;
+
+        console.error("❌ ERROR DEL BACKEND:", error);
       }
     );
   }
-
 
   // -------------------------------------------------------------------
   // 📊 GENERAR GRÁFICOS

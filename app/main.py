@@ -1,4 +1,4 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
@@ -6,7 +6,7 @@ import os
 import shutil
 from datetime import datetime
 
-app = FastAPI(title="Proyecto de Imágenes")
+app = FastAPI(title="API de Gestión de Imágenes y Excel, Listo para Producción 🚀")
 
 # CORS
 app.add_middleware(
@@ -18,43 +18,47 @@ app.add_middleware(
 )
 
 # ------------------------------------------------------
-# Rutas absolutas para asegurar guardado correcto
+# Rutas absolutas basadas en la CARPETA RAÍZ DEL PROYECTO
+# (donde están /files y /uploads)
 # ------------------------------------------------------
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Carpeta donde está main.py
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+#                    ↑↑ sube un nivel porque main.py está dentro de /app/
 
 EXCEL_FOLDER = os.path.join(BASE_DIR, "files", "excel")
-os.makedirs(EXCEL_FOLDER, exist_ok=True)
-
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+
+os.makedirs(EXCEL_FOLDER, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
-# Servir imágenes y Excel como archivos estáticos
+# Servir archivos estáticos
 app.mount("/uploads", StaticFiles(directory=UPLOAD_FOLDER), name="uploads")
 app.mount("/files", StaticFiles(directory=os.path.join(BASE_DIR, "files")), name="files")
+
 
 # ------------------------------------------------------
 # ENDPOINT PRINCIPAL
 # ------------------------------------------------------
 @app.get("/")
 def root():
-    return {"message": "API de imágenes funcionando 🚀"}
+    return {"API de imágenes funcionando 🚀"}
+
 
 # ------------------------------------------------------
-# SUBIR EXCEL
+# SUBIR EXCEL ORIGINAL (/upload-excel)
 # ------------------------------------------------------
 @app.post("/upload-excel")
 async def upload_excel(file: UploadFile = File(...)):
-    # Validación simple
     if not file.filename.lower().endswith((".xlsx", ".xls")):
-        raise HTTPException(status_code=400, detail="El archivo debe ser .xlsx o .xls")
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo debe ser .xlsx o .xls"
+        )
 
-    # Crear nombre único con timestamp
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{timestamp}_{file.filename}"
 
     file_path = os.path.join(EXCEL_FOLDER, filename)
 
-    # Guardar archivo físicamente
     with open(file_path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
@@ -65,13 +69,48 @@ async def upload_excel(file: UploadFile = File(...)):
         "path": f"/files/excel/{filename}"
     }
 
+
+# ------------------------------------------------------
+# SUBIDA DESDE ANGULAR (/uploadfile/)
+# ------------------------------------------------------
+@app.post("/uploadfile/")
+async def upload_file(
+    file: UploadFile = File(...),
+    sheet: str = Form(...)
+):
+    if not file.filename.lower().endswith((".xlsx", ".xls")):
+        raise HTTPException(
+            status_code=400,
+            detail="El archivo debe ser .xlsx o .xls"
+        )
+
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    filename = f"{timestamp}_{file.filename}"
+
+    file_path = os.path.join(EXCEL_FOLDER, filename)
+
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    return {
+        "status": 200,
+        "message": "Archivo recibido correctamente",
+        "filename": filename,
+        "sheet": sheet,
+        "path": f"/files/excel/{filename}"
+    }
+
+
 # ------------------------------------------------------
 # SUBIR IMAGEN
 # ------------------------------------------------------
 @app.post("/upload-image/")
 async def upload_image(file: UploadFile = File(...)):
     if not file.content_type.startswith("image/"):
-        raise HTTPException(status_code=400, detail="Solo imágenes (JPG, PNG, etc).")
+        raise HTTPException(
+            status_code=400,
+            detail="Solo imágenes (JPG, PNG, etc)."
+        )
 
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     filename = f"{timestamp}_{file.filename}"
@@ -90,6 +129,7 @@ async def upload_image(file: UploadFile = File(...)):
         }
     }
 
+
 # ------------------------------------------------------
 # VER IMAGEN
 # ------------------------------------------------------
@@ -100,6 +140,7 @@ async def get_image(filename: str):
         raise HTTPException(status_code=404, detail="Imagen no encontrada")
     return FileResponse(file_path)
 
+
 # ------------------------------------------------------
 # ELIMINAR IMAGEN
 # ------------------------------------------------------
@@ -108,8 +149,10 @@ async def delete_image(filename: str):
     file_path = os.path.join(UPLOAD_FOLDER, filename)
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Imagen no encontrada")
+
     os.remove(file_path)
     return {"message": f"Imagen '{filename}' eliminada correctamente"}
+
 
 # ------------------------------------------------------
 # GALERÍA HTML
@@ -117,7 +160,9 @@ async def delete_image(filename: str):
 @app.get("/images/", response_class=HTMLResponse)
 async def list_images():
     files = os.listdir(UPLOAD_FOLDER)
-    image_files = [f for f in files if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".webp"))]
+    image_files = [f for f in files if f.lower().endswith(
+        (".png", ".jpg", ".jpeg", ".gif", ".webp")
+    )]
 
     html = """
     <html>
