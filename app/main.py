@@ -1,14 +1,29 @@
-from fastapi import FastAPI, UploadFile, File, HTTPException, Form
+from fastapi import FastAPI, UploadFile, File, HTTPException, Form, Request
 from fastapi.responses import FileResponse, HTMLResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
 import os
 import shutil
 from datetime import datetime
+import uvicorn
+from random import randint
 
 app = FastAPI(title="API de Gestión de Imágenes y Excel, Listo para Producción 🚀")
 
+# ==============================
+# TEMPLATES
+# ==============================
+# Como templates está en la RAÍZ del proyecto:
+# /
+# ├── app/
+# ├── templates/
+templates = Jinja2Templates(directory="templates")
+
+
+# ==============================
 # CORS
+# ==============================
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -17,49 +32,71 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# ------------------------------------------------------
-# Rutas absolutas basadas en la CARPETA RAÍZ DEL PROYECTO
-# (donde están /files y /uploads)
-# ------------------------------------------------------
+# ==============================
+# BASE PATHS (CARPETAS RAÍZ)
+# ==============================
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-#                    ↑↑ sube un nivel porque main.py está dentro de /app/
 
-EXCEL_FOLDER = os.path.join(BASE_DIR, "files", "excel")
+FILES_ROOT = os.path.join(BASE_DIR, "files")
+EXCEL_FOLDER = os.path.join(FILES_ROOT, "excel")
 UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 
+# Crear carpetas si no existen
 os.makedirs(EXCEL_FOLDER, exist_ok=True)
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(FILES_ROOT, exist_ok=True)
 
-# Servir archivos estáticos
+# ==============================
+# STATIC FILES
+# ==============================
+# /static → app/static
+app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# /uploads → carpeta uploads
 app.mount("/uploads", StaticFiles(directory=UPLOAD_FOLDER), name="uploads")
-app.mount("/files", StaticFiles(directory=os.path.join(BASE_DIR, "files")), name="files")
+
+# /files → carpeta files
+app.mount("/files", StaticFiles(directory=FILES_ROOT), name="files")
 
 
-# ------------------------------------------------------
-# ENDPOINT PRINCIPAL
-# ------------------------------------------------------
-@app.get("/")
-def root():
-    return {"API de imágenes funcionando 🚀"}
+# ==============================
+# HELPERS
+# ==============================
+def timestamped_filename(original_name: str) -> str:
+    safe_name = os.path.basename(original_name)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    return f"{timestamp}_{safe_name}"
 
 
-# ------------------------------------------------------
-# SUBIR EXCEL ORIGINAL (/upload-excel)
-# ------------------------------------------------------
+def allowed_excel(filename: str) -> bool:
+    return filename.lower().endswith((".xlsx", ".xls"))
+
+
+def allowed_image(filename: str) -> bool:
+    return filename.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp", ".tiff"))
+
+
+# ==============================
+# PÁGINA PRINCIPAL (INDEX)
+# ==============================
+@app.get("/", response_class=HTMLResponse)
+def home(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
+
+# ==============================
+# SUBIR EXCEL (BACK + ANGULAR)
+# ==============================
 @app.post("/upload-excel")
 async def upload_excel(file: UploadFile = File(...)):
-    if not file.filename.lower().endswith((".xlsx", ".xls")):
-        raise HTTPException(
-            status_code=400,
-            detail="El archivo debe ser .xlsx o .xls"
-        )
+    safe_name = os.path.basename(file.filename or "")
+    if not allowed_excel(safe_name):
+        raise HTTPException(400, "El archivo debe ser .xlsx o .xls")
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{timestamp}_{file.filename}"
+    filename = timestamped_filename(safe_name)
+    path = os.path.join(EXCEL_FOLDER, filename)
 
-    file_path = os.path.join(EXCEL_FOLDER, filename)
-
-    with open(file_path, "wb") as buffer:
+    with open(path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     return {
@@ -70,26 +107,19 @@ async def upload_excel(file: UploadFile = File(...)):
     }
 
 
-# ------------------------------------------------------
-# SUBIDA DESDE ANGULAR (/uploadfile/)
-# ------------------------------------------------------
 @app.post("/uploadfile/")
 async def upload_file(
     file: UploadFile = File(...),
     sheet: str = Form(...)
 ):
-    if not file.filename.lower().endswith((".xlsx", ".xls")):
-        raise HTTPException(
-            status_code=400,
-            detail="El archivo debe ser .xlsx o .xls"
-        )
+    safe_name = os.path.basename(file.filename or "")
+    if not allowed_excel(safe_name):
+        raise HTTPException(400, "El archivo debe ser .xlsx o .xls")
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{timestamp}_{file.filename}"
+    filename = timestamped_filename(safe_name)
+    path = os.path.join(EXCEL_FOLDER, filename)
 
-    file_path = os.path.join(EXCEL_FOLDER, filename)
-
-    with open(file_path, "wb") as buffer:
+    with open(path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     return {
@@ -101,23 +131,21 @@ async def upload_file(
     }
 
 
-# ------------------------------------------------------
+# ==============================
 # SUBIR IMAGEN
-# ------------------------------------------------------
+# ==============================
 @app.post("/upload-image/")
 async def upload_image(file: UploadFile = File(...)):
-    if not file.content_type.startswith("image/"):
-        raise HTTPException(
-            status_code=400,
-            detail="Solo imágenes (JPG, PNG, etc)."
-        )
+    safe_name = os.path.basename(file.filename or "")
+    is_image = (file.content_type and file.content_type.startswith("image/")) or allowed_image(safe_name)
 
-    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    filename = f"{timestamp}_{file.filename}"
+    if not is_image:
+        raise HTTPException(400, "Solo imágenes (JPG, PNG, etc).")
 
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
+    filename = timestamped_filename(safe_name)
+    path = os.path.join(UPLOAD_FOLDER, filename)
 
-    with open(file_path, "wb") as buffer:
+    with open(path, "wb") as buffer:
         shutil.copyfileobj(file.file, buffer)
 
     return {
@@ -130,143 +158,89 @@ async def upload_image(file: UploadFile = File(...)):
     }
 
 
-# ------------------------------------------------------
-# VER IMAGEN
-# ------------------------------------------------------
+# ==============================
+# OBTENER IMAGEN
+# ==============================
 @app.get("/images/{filename}")
 async def get_image(filename: str):
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Imagen no encontrada")
-    return FileResponse(file_path)
+    safe_name = os.path.basename(filename)
+    path = os.path.join(UPLOAD_FOLDER, safe_name)
+
+    if not os.path.exists(path):
+        raise HTTPException(404, "Imagen no encontrada")
+
+    return FileResponse(path)
 
 
-# ------------------------------------------------------
+# ==============================
 # ELIMINAR IMAGEN
-# ------------------------------------------------------
+# ==============================
 @app.delete("/images/{filename}")
 async def delete_image(filename: str):
-    file_path = os.path.join(UPLOAD_FOLDER, filename)
-    if not os.path.exists(file_path):
-        raise HTTPException(status_code=404, detail="Imagen no encontrada")
+    safe_name = os.path.basename(filename)
+    path = os.path.join(UPLOAD_FOLDER, safe_name)
 
-    os.remove(file_path)
-    return {"message": f"Imagen '{filename}' eliminada correctamente"}
+    if not os.path.exists(path):
+        raise HTTPException(404, "Imagen no encontrada")
+
+    os.remove(path)
+    return {"message": f"Imagen '{safe_name}' eliminada correctamente"}
 
 
-# ------------------------------------------------------
-# GALERÍA HTML
-# ------------------------------------------------------
+# ==============================
+# ELIMINAR EXCEL
+# ==============================
+@app.delete("/excel/{filename}")
+async def delete_excel(filename: str):
+    safe_name = os.path.basename(filename)
+    path = os.path.join(EXCEL_FOLDER, safe_name)
+
+    if not os.path.exists(path):
+        raise HTTPException(404, "Archivo Excel no encontrado")
+
+    os.remove(path)
+
+    return {"status": 200, "message": f"Excel '{safe_name}' eliminado correctamente"}
+
+
+# ==============================
+# GALERÍA (HTML)
+# ==============================
 @app.get("/images/", response_class=HTMLResponse)
 async def list_images():
     files = os.listdir(UPLOAD_FOLDER)
-    image_files = [f for f in files if f.lower().endswith(
-        (".png", ".jpg", ".jpeg", ".gif", ".webp")
-    )]
+    image_files = [f for f in files if f.lower().endswith((".png", ".jpg", ".jpeg", ".gif", ".webp"))]
 
-    html = """
-    <html>
-    <head>
-        <title>Galería de Imágenes</title>
-        <style>
-            body {
-                margin: 0;
-                padding: 0;
-                background: linear-gradient(135deg, #5b00b7, #8c00ff);
-                font-family: 'Poppins', sans-serif;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                min-height: 100vh;
-                color: #fff;
-            }
-            h1 {
-                margin-top: 30px;
-                font-size: 2.5rem;
-                text-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-            }
-            .gallery {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-                gap: 25px;
-                width: 90%;
-                max-width: 1400px;
-                margin: 40px auto;
-            }
-            .card {
-                background: rgba(255,255,255,0.1);
-                border-radius: 16px;
-                padding: 15px;
-                text-align: center;
-                box-shadow: 0 8px 20px rgba(0,0,0,0.35);
-                backdrop-filter: blur(10px);
-                transition: 0.3s;
-            }
-            .card:hover {
-                transform: translateY(-5px);
-            }
-            .card img {
-                width: 100%;
-                height: 200px;
-                object-fit: cover;
-                border-radius: 12px;
-                box-shadow: 0 6px 15px rgba(0,0,0,0.3);
-            }
-            .btn {
-                margin-top: 10px;
-                padding: 10px 15px;
-                border: none;
-                border-radius: 8px;
-                cursor: pointer;
-                font-size: 0.9rem;
-                font-weight: bold;
-            }
-            .view-btn {
-                background: #00d4ff;
-                color: black;
-            }
-            .delete-btn {
-                background: #ff3b3b;
-                color: white;
-            }
-            .delete-btn:hover {
-                background: #cc0000;
-            }
-            .view-btn:hover {
-                background: #00aacc;
-            }
-        </style>
-        <script>
-            async function deleteImage(filename) {
-                if (!confirm("¿Seguro que deseas eliminar esta imagen?")) return;
-                const response = await fetch(`/images/${filename}`, { method: "DELETE" });
-                if (response.ok) {
-                    alert("Imagen eliminada correctamente");
-                    location.reload();
-                } else {
-                    alert("Error al eliminar la imagen");
-                }
-            }
-        </script>
-    </head>
-    <body>
-        <h1>Galería de Imágenes</h1>
-        <div class="gallery">
-    """
-
-    for filename in image_files:
-        html += f"""
-            <div class='card'>
-                <img src='/uploads/{filename}' alt='{filename}' />
-                <button class='btn view-btn' onclick="window.open('/uploads/{filename}', '_blank')">Ver</button>
-                <button class='btn delete-btn' onclick="deleteImage('{filename}')">Eliminar</button>
-            </div>
+    html_images = ""
+    for img in image_files:
+        html_images += f"""
+        <div class="image-card">
+            <img src="/uploads/{img}">
+            <div class="image-info">{img}</div>
+        </div>
         """
 
-    html += """
-        </div>
-    </body>
-    </html>
-    """
+    with open("templates/galeria.html", "r", encoding="utf-8") as f:
+        template = f.read()
 
-    return HTMLResponse(html)
+    return template.replace("{{IMAGES}}", html_images)
+
+
+# ==============================
+# MÉTRICAS RANDOM
+# ==============================
+@app.get("/stats")
+def get_stats():
+    return {
+        "imagenes_subidas": randint(20, 150),
+        "usuarios_activos": randint(1, 10),
+        "peticiones_hoy": randint(50, 300),
+        "uso_storage_mb": randint(100, 900)
+    }
+
+
+# ==============================
+# EJECUCIÓN DIRECTA
+# ==============================
+if __name__ == "__main__":
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
