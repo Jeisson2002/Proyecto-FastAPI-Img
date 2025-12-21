@@ -1,0 +1,165 @@
+/* ============================================
+   NAVBAR - MENU BAR CON EFECTO NEÓN
+   ============================================ */
+.menu-bar {
+  background: rgba(10, 10, 10, 0.8);
+  backdrop-filter: blur(10px);
+  padding: 1.5rem 2rem;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  border-bottom: 2px solid transparent;
+  border-image: linear-gradient(90deg, #ff00ff, #00ffff, #ff00ff) 1;
+  box-shadow: 0 4px 30px rgba(255, 0, 255, 0.3);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 100%;
+}
+
+.menu-logo {
+  font-size: 1.8rem;
+  font-weight: bold;
+  background: linear-gradient(45deg, #ff00ff, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: glow 2s ease-in-out infinite;
+  cursor: pointer;
+}
+
+@keyframes glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px #ff00ff);
+  }
+  50% {
+    filter: drop-shadow(0 0 20px #ff00ff);
+  }
+}
+
+.menu-links {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+}
+
+.menu-links li {
+  position: relative;
+}
+
+.menu-links a {
+  color: #fff;
+  text-decoration: none;
+  padding: 0.5rem 1.5rem;
+  border-radius: 25px;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  display: inline-block;
+  font-weight: 500;
+}
+
+.menu-links a::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 0, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.5s, height 0.5s;
+  z-index: -1;
+}
+
+.menu-links a:hover::before {
+  width: 200px;
+  height: 200px;
+}
+
+.menu-links a:hover {
+  color: #ff00ff;
+  text-shadow: 0 0 10px #ff00ff;
+  transform: translateY(-2px);
+}
+
+/* Efecto de link activo */
+.menu-links a.active {
+  background: linear-gradient(135deg, rgba(255, 0, 255, 0.2), rgba(0, 255, 255, 0.2));
+  border: 1px solid #ff00ff;
+  box-shadow: 0 0 15px rgba(255, 0, 255, 0.5);
+}
+
+/* ============================================
+   PARTÍCULAS DECORATIVAS
+   ============================================ */
+.particle {
+  position: fixed;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  animation: float 20s infinite ease-in-out;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0) translateX(0);
+    opacity: 0.3;
+  }
+  50% {
+    transform: translateY(-100px) translateX(50px);
+    opacity: 0.6;
+  }
+}
+
+/* ============================================
+   PAGE CONTAINER
+   ============================================ */
+.page-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 3rem 2rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 768px) {
+  .menu-bar {
+    flex-direction: column;
+    padding: 1rem;
+    gap: 1rem;
+  }
+
+  .menu-links {
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .menu-links a {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .menu-logo {
+    font-size: 1.4rem;
+  }
+
+  .page-container {
+    padding: 2rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .menu-logo {
+    font-size: 1.2rem;
+  }
+}
