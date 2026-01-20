@@ -1,0 +1,80 @@
+.nexo-container {
+  height: 100vh;
+  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  display: flex;
+  flex-direction: column;
+  color: #fff;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.nexo-header {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.nexo-header .logo {
+  font-size: 32px;
+}
+
+.chat-box {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.message {
+  display: flex;
+  margin-bottom: 12px;
+}
+
+.message.user {
+  justify-content: flex-end;
+}
+
+.message.bot {
+  justify-content: flex-start;
+}
+
+.bubble {
+  max-width: 70%;
+  padding: 12px 15px;
+  border-radius: 15px;
+  font-size: 14px;
+}
+
+.message.user .bubble {
+  background: #00c6ff;
+  color: #000;
+  border-bottom-right-radius: 0;
+}
+
+.message.bot .bubble {
+  background: #1e1e2f;
+  color: #fff;
+  border-bottom-left-radius: 0;
+}
+
+.input-box {
+  display: flex;
+  padding: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.input-box input {
+  flex: 1;
+  padding: 12px;
+  border-radius: 20px;
+  border: none;
+  outline: none;
+}
+
+.input-box button {
+  margin-left: 10px;
+  padding: 0 20px;
+  border-radius: 20px;
+  border: none;
+  background: #00c6ff;
+  cursor: pointer;
+  font-weight: bold;
+}

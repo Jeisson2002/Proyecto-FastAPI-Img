@@ -1,0 +1,27 @@
+<div class="nexo-container">
+  <div class="nexo-header">
+    <span class="logo">🧠</span>
+    <h2>NEXO IA</h2>
+    <small>Asistente inteligente</small>
+  </div>
+
+  <div class="chat-box">
+    <div
+      class="message"
+      *ngFor="let msg of messages"
+      [ngClass]="msg.from"
+    >
+      <span class="bubble">{{ msg.text }}</span>
+    </div>
+  </div>
+
+  <div class="input-box">
+    <input
+      type="text"
+      [(ngModel)]="userInput"
+      placeholder="Escribe algo..."
+      (keyup.enter)="sendMessage()"
+    />
+    <button (click)="sendMessage()">Enviar</button>
+  </div>
+</div>

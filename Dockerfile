@@ -1,32 +1,26 @@
 # =========================
-# Dockerfile Mejorado
+# Dockerfile Backend FastAPI
 # =========================
 
-# Imagen base ligera
 FROM python:3.10-slim
 
-# Variables de entorno
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 
-# Directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# Copiar archivos necesarios
-COPY requirements.txt ./
+# Copiar dependencias
+COPY Backend/requirements.txt ./
 
-# Instalar dependencias
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-# Copiar todo el proyecto
-COPY . .
+# Copiar SOLO el backend
+COPY Backend/ .
 
-# Crear carpeta para subir imágenes
+# Crear carpeta para uploads
 RUN mkdir -p /app/uploads
 
-# Exponer el puerto
 EXPOSE 8000
 
-# Comando de inicio
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]

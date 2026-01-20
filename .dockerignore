@@ -1,7 +1,31 @@
-__pycache__
+# Git
+.git
+.gitignore
+
+# Python
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 .env
-venv
-.git
+.env.*
+venv/
+
+# Frontend (Angular / Node)
+node_modules/
+dist/
+build/
+.angular/
+
+# Logs
+*.log
+logs/
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Docker
+docker-compose.override.yml
