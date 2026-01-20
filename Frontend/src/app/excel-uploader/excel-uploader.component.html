@@ -1,242 +1,68 @@
-<!-- 🔥 EXCEL UPLOADER PREMIUM CON DRAG & DROP Y ANIMACIONES NEÓN -->
+<!-- 🔥 NUEVO HTML COMPLETO, CORREGIDO Y LISTO -->
 
-<div class="excel-container">
+<div class="excel-wrapper">
+  <div class="excel-card">
 
-  <!-- ZONA DE DRAG & DROP -->
-  <div class="upload-section">
-    <div class="excel-card-main">
+    <!-- Ícono Excel animado -->
+    <img src="/assets/img/excel.png" class="excel-logo-round">
 
-      <!-- Logo Excel Animado -->
-      <div class="excel-logo-wrapper">
-        <img src="/assets/img/excel.png" class="excel-logo-animated" alt="Excel">
-        <div class="glow-circle"></div>
-      </div>
+    <h2>📄 Cargar Archivo Excel</h2>
 
-      <h2 class="section-title">📊 Cargador de Excel Premium</h2>
-      <p class="section-subtitle">Arrastra tu archivo o haz clic para seleccionar</p>
+    <!-- Selector de archivo -->
+    <label class="file-label">
+      Seleccionar archivo
+      <input type="file" (change)="onFileSelected($event)">
+    </label>
 
-      <!-- DRAG & DROP ZONE -->
-      <div class="dropzone" [class.dragover]="isDragging" [class.has-file]="selectedFile" (drop)="onDrop($event)"
-        (dragover)="onDragOver($event)" (dragleave)="onDragLeave($event)" (click)="fileInput.click()">
-
-        <div class="dropzone-content">
-          <div class="upload-icon">
-            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="17 8 12 3 7 8"></polyline>
-              <line x1="12" y1="3" x2="12" y2="15"></line>
-            </svg>
-          </div>
-
-          <div *ngIf="!selectedFile" class="dropzone-text">
-            <h3>Arrastra tu archivo Excel aquí</h3>
-            <p>o haz clic para seleccionar</p>
-            <span class="file-types">Formatos: .xls, .xlsx, .csv</span>
-          </div>
-
-          <div *ngIf="selectedFile" class="file-selected">
-            <div class="file-icon">📄</div>
-            <div class="file-info">
-              <h4>{{ selectedFile.name }}</h4>
-              <p>{{ formatFileSize(selectedFile.size) }}</p>
-            </div>
-            <button class="remove-file-btn" (click)="removeFile($event)">✕</button>
-          </div>
-        </div>
-
-        <input #fileInput type="file" accept=".xls,.xlsx,.csv" (change)="onFileSelected($event)" style="display: none;">
-      </div>
-
-      <!-- SELECTOR DE HOJA -->
-      <div *ngIf="sheetNames.length > 0" class="sheet-selector-wrapper">
-        <label class="input-label">
-          <span class="label-icon">📑</span>
-          Selecciona la hoja a cargar:
-        </label>
-
-        <div class="custom-select-wrapper">
-          <div class="custom-select" (click)="toggleSelect()" [class.open]="selectOpen">
-            <div class="select-value">
-              <span>{{ selectedSheet || 'Elige una hoja' }}</span>
-              <span class="select-arrow" [class.rotate]="selectOpen">▼</span>
-            </div>
-
-            <ul class="select-dropdown" *ngIf="selectOpen" [@slideDown]>
-              <li *ngFor="let sheet of sheetNames; let i = index" (click)="selectSheet(sheet)"
-                [class.selected]="sheet === selectedSheet" [style.animation-delay.ms]="i * 50">
-                <span class="sheet-icon">📄</span>
-                {{ sheet }}
-                <span class="check-icon" *ngIf="sheet === selectedSheet">✓</span>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      <!-- BOTONES DE ACCIÓN -->
-      <div class="action-buttons" *ngIf="selectedFile">
-        <button class="btn-neon primary" (click)="uploadExcel()" [disabled]="uploading || !selectedSheet">
-          <span class="btn-icon">⬆️</span>
-          {{ uploading ? 'Subiendo...' : 'Cargar Archivo' }}
-        </button>
-
-        <button class="btn-neon secondary" (click)="clearAll()">
-          <span class="btn-icon">🗑️</span>
-          Limpiar
-        </button>
-      </div>
-
-      <!-- BARRA DE PROGRESO -->
-      <div class="progress-wrapper" *ngIf="uploading">
-        <div class="progress-label">
-          <span>Procesando archivo...</span>
-          <span class="progress-percentage">{{ uploadProgress }}%</span>
-        </div>
-        <div class="progress-track">
-          <div class="progress-fill" [style.width.%]="uploadProgress"></div>
-          <div class="progress-glow" [style.width.%]="uploadProgress"></div>
-        </div>
-      </div>
-
-      <!-- MENSAJE DE ESTADO -->
-      <div *ngIf="statusMessage" class="status-message" [ngClass]="statusType">
-        <span class="status-icon">{{ statusType === 'success' ? '✓' : '✕' }}</span>
-        {{ statusMessage }}
-      </div>
-
-    </div>
-  </div>
-
-  <!-- PANEL DE CONTROL Y BÚSQUEDA -->
-  <div class="control-panel" *ngIf="excelData.length > 0">
-    <div class="control-card">
-
-      <div class="control-header">
-        <h3>🎛️ Panel de Control</h3>
-        <span class="data-count">{{ filteredData.length }} registros</span>
-      </div>
-
-      <!-- BUSCADOR -->
-      <div class="search-box">
-        <span class="search-icon">🔍</span>
-        <input type="text" placeholder="Buscar en todos los campos..." [(ngModel)]="searchTerm" (input)="filterData()"
-          class="search-input">
-        <button *ngIf="searchTerm" class="clear-search" (click)="clearSearch()">✕</button>
-      </div>
-
-      <!-- FILTROS POR COLUMNA -->
-      <div class="column-filters" *ngIf="columnNames.length > 0">
-        <label class="filter-label">Filtrar por columna:</label>
-        <div class="filter-chips">
-          <button *ngFor="let col of columnNames" class="filter-chip" [class.active]="selectedColumn === col"
-            (click)="toggleColumnFilter(col)">
-            {{ col }}
-          </button>
-        </div>
-      </div>
-
-      <!-- Acciones rápidas -->
-      <div class="quick-actions">
-        <button class="action-btn" (click)="exportToCSV()">
-          💾 Exportar CSV
-        </button>
-
-        <button class="action-btn" (click)="exportToJSON()">
-          📋 Exportar JSON
-        </button>
-
-        <button class="action-btn" (click)="exportToPDF()">
-          📄 Exportar PDF
-        </button>
-
-        <button class="action-btn" (click)="toggleCharts()">
-          📊 {{ showCharts ? 'Ocultar' : 'Mostrar' }} Gráficos
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- TABLA DE DATOS INTERACTIVA -->
-  <div class="data-section" *ngIf="filteredData.length > 0">
-    <div class="data-card">
-
-      <div class="table-header">
-        <h3>📋 Datos del Archivo</h3>
-        <div class="table-actions">
-          <button class="icon-btn" (click)="toggleEditMode()" [class.active]="editMode">
-            <span>✏️</span> {{ editMode ? 'Ver' : 'Editar' }}
-          </button>
-          <button class="icon-btn" (click)="refreshData()">
-            <span>🔄</span> Actualizar
-          </button>
-        </div>
-      </div>
-
-      <div class="table-wrapper">
-        <table class="data-table">
-          <thead>
-            <tr>
-              <th *ngFor="let col of columnNames; let i = index" [style.animation-delay.ms]="i * 30"
-                (click)="sortByColumn(col)">
-                {{ col }}
-                <span class="sort-icon" *ngIf="sortColumn === col">
-                  {{ sortDirection === 'asc' ? '↑' : '↓' }}
-                </span>
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let row of getPaginatedData(); let i = index" [style.animation-delay.ms]="i * 20"
-              class="table-row">
-              <td *ngFor="let col of columnNames" [class.editable]="editMode" (click)="editMode && editCell(row, col)">
-                <span *ngIf="!isEditingCell(row, col)">{{ row[col] }}</span>
-                <input *ngIf="isEditingCell(row, col)" type="text" [(ngModel)]="row[col]" (blur)="saveCell(row, col)"
-                  (keyup.enter)="saveCell(row, col)" class="cell-input" #cellInput>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- PAGINACIÓN -->
-      <div class="pagination" *ngIf="totalPages > 1">
-        <button class="page-btn" (click)="previousPage()" [disabled]="currentPage === 1">
-          ← Anterior
-        </button>
-
-        <div class="page-numbers">
-          <button *ngFor="let page of getPageNumbers()" class="page-number" [class.active]="page === currentPage"
-            (click)="goToPage(page)">
-            {{ page }}
-          </button>
-        </div>
-
-        <button class="page-btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
-          Siguiente →
-        </button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- GRÁFICOS -->
-  <div class="charts-section" *ngIf="showCharts && excelData.length > 0">
-
-    <div class="chart-card">
-      <h3 class="chart-title">📊 Gráfico de Barras</h3>
-      <div class="chart-container">
-        <canvas id="chartBar"></canvas>
-      </div>
+    <div class="file-name" *ngIf="selectedFile">
+      Archivo: {{ selectedFile.name }}
     </div>
 
-    <div class="chart-card">
-      <h3 class="chart-title">📈 Gráfico de Líneas</h3>
-      <div class="chart-container">
-        <canvas id="chartLine"></canvas>
-      </div>
+    <!-- Selector de Hoja -->
+    <div *ngIf="sheetNames.length > 0" class="sheet-select-container">
+      <label class="sheet-select-label">Selecciona una hoja:</label>
+      <select class="sheet-select neon-select" [(ngModel)]="selectedSheet" (change)="onSheetChange($event)">
+        <option *ngFor="let sheet of sheetNames" [value]="sheet">{{ sheet }}</option>
+      </select>
     </div>
+
+    <!-- Botón subir -->
+    <button class="upload-btn neon-btn-blue" (click)="uploadExcel()">
+      Subir Archivo
+    </button>
+
+    <!-- Barra de progreso -->
+    <div class="progress-container" *ngIf="uploading">
+      <div class="progress-bar" [style.width.%]="uploadProgress"></div>
+    </div>
+
+    <p *ngIf="uploading" class="progress-text">
+      Cargando: {{ uploadProgress }}%
+    </p>
+
+    <p *ngIf="statusMessage" [ngClass]="statusType">
+      {{ statusMessage }}
+    </p>
 
   </div>
+</div>
 
+<!-- Vista previa -->
+<div class="preview-container" *ngIf="excelPreview.length > 0">
+  <h3 class="neon-preview-title">👁️ Vista previa del archivo</h3>
+
+  <table class="preview-table">
+    <tr *ngFor="let row of excelPreview">
+      <td *ngFor="let cell of row">{{ cell }}</td>
+    </tr>
+  </table>
+</div>
+
+<!-- Gráficos -->
+<div style="width: 90%; max-width: 900px; margin: 40px auto;">
+  <canvas id="chartBar"></canvas>
+</div>
+
+<div style="width: 90%; max-width: 900px; margin: 40px auto;">
+  <canvas id="chartLine"></canvas>
 </div>

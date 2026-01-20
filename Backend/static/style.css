@@ -1,61 +1,108 @@
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
+/* ==============================
+   ESTILO PRO - DARK FUTURISTA
+============================== */
 
 body {
-  font-family: 'Arial', sans-serif;
-  background: linear-gradient(135deg, #0a0a0a 0%, #1a0a2e 50%, #0a0a0a 100%);
-  min-height: 100vh;
-  color: #fff;
-  overflow-x: hidden;
+    margin: 0;
+    padding: 0;
+    background: #0a0f1f;
+    font-family: "Poppins", sans-serif;
+    color: #fff;
+    text-align: center;
 }
 
-/* Efectos de fondo animado */
-body::before {
-  content: '';
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background:
-    radial-gradient(circle at 20% 50%, rgba(255, 0, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(0, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 20%, rgba(255, 0, 128, 0.08) 0%, transparent 50%);
-  animation: moveGradient 15s ease infinite;
-  pointer-events: none;
-  z-index: 0;
+/* Título neon */
+.title {
+    margin-top: 40px;
+    font-size: 2.6rem;
+    font-weight: 600;
+    text-shadow: 0 0 10px #4f8bff, 0 0 20px #4f8bff;
 }
 
-@keyframes moveGradient {
-  0%, 100% {
+/* GALERÍA */
+.gallery-container {
+    width: 90%;
+    margin: 40px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 25px;
+}
+
+/* TARJETA DE IMAGEN */
+.image-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 14px;
+    background: rgba(255, 255, 255, 0.04);
+    backdrop-filter: blur(6px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    box-shadow: 0 0 15px rgba(80, 150, 255, 0.25);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Hover PRO */
+.image-card:hover {
+    transform: scale(1.06) rotate3d(1, 1, 0, 6deg);
+    box-shadow: 0 0 25px rgba(80, 150, 255, 0.55),
+                0 0 35px rgba(140, 70, 255, 0.45);
+}
+
+/* Imagen dentro */
+.image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: opacity 0.35s ease;
+}
+
+/* Overlay futurista */
+.image-card:hover img {
+    opacity: 0.85;
+}
+
+/* Texto sobre la imagen */
+.image-info {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    padding: 12px;
+    font-size: 1rem;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    text-align: center;
+    transform: translateY(100%);
+    transition: 0.35s ease;
+}
+
+.image-card:hover .image-info {
+    transform: translateY(0);
+}
+
+.image-card {
+    position: relative;
+}
+
+.delete-btn {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: rgba(255, 0, 0, 0.85);
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: bold;
+    transition: 0.25s ease;
+    opacity: 0;
+}
+
+.image-card:hover .delete-btn {
     opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
+}
+
+.delete-btn:hover {
+    background: #ff4c4c;
     transform: scale(1.1);
-  }
-}
-
-/* Partículas de fondo */
-.particle {
-  position: fixed;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 0;
-  animation: float 20s infinite ease-in-out;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translateY(0) translateX(0);
-    opacity: 0.3;
-  }
-  50% {
-    transform: translateY(-100px) translateX(50px);
-    opacity: 0.6;
-  }
 }

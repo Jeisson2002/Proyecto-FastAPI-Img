@@ -1,16 +1,16 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { AlbumsComponent } from './albums.component';
+import { AlbumsComponent } from './albums.component'; // 👈 nombre correcto
 
 describe('AlbumsComponent', () => {
-  let component: AlbumsComponent;
+  let component: AlbumsComponent; // 👈 usar AlbumsComponent
   let fixture: ComponentFixture<AlbumsComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [AlbumsComponent]
+      imports: [AlbumsComponent] // 👈 standalone se importa aquí
     }).compileComponents();
 
-    fixture = TestBed.createComponent(AlbumsComponent);
+    fixture = TestBed.createComponent(AlbumsComponent); // 👈 igual aquí
     component = fixture.componentInstance;
     fixture.detectChanges();
   });
